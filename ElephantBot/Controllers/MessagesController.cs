@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace ElephantBot
 {
@@ -25,8 +26,27 @@ namespace ElephantBot
                 // calculate something for us to return
                 int length = (activity.Text ?? string.Empty).Length;
 
-                // return our reply to the user
-                Activity reply = activity.CreateReply($"You sent {activity.Text} which was {length} characters");
+                Activity reply;
+
+                if (activity.Text.ToUpper() == "ЛАДНО" || activity.Text.ToUpper() == "ОК" || activity.Text.ToUpper() == "OK")
+                {
+                    reply = activity.CreateReply($"Лови!");
+                    reply.Recipient = activity.From;
+                    reply.Type = "message";
+                    reply.Attachments = new List<Attachment>();
+
+                    reply.Attachments.Add(new Attachment()
+                    {
+                        ContentUrl = "http://omel.ucoz.ru/artikulazia/slon.png",
+                        ContentType = "image/png",
+                        Name = "slon.png"
+                    });
+                }
+                else
+                {
+                    reply = activity.CreateReply($"Все говорят '{activity.Text}', а ты купи слона?");
+                }
+
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
